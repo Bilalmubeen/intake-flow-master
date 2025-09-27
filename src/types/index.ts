@@ -30,9 +30,11 @@ export interface ClientIntakeRecord {
   providerNpiNumbers: string;
   
   // Enrollment Setup
-  insurancePlans: string[];
-  enrollmentEffectiveDate: Date | null;
-  notes: string;
+  insurancePlans: {
+    planId: string;
+    enrollmentEffectiveDate: Date | null;
+    notes?: string;
+  }[];
   
   // Policies & Documentation
   policyAcknowledgment: boolean;

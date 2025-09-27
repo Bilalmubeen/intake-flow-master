@@ -51,8 +51,6 @@ export function ClientIntakeForm({
       clearinghouseSelection: initialData?.clearinghouseSelection || "",
       providerNpiNumbers: initialData?.providerNpiNumbers || "",
       insurancePlans: initialData?.insurancePlans || [],
-      enrollmentEffectiveDate: initialData?.enrollmentEffectiveDate || undefined,
-      notes: initialData?.notes || "",
       policyAcknowledgment: initialData?.policyAcknowledgment || false,
       policyFiles: initialData?.policyFiles || [],
       slaAgreedDate: initialData?.slaAgreedDate || undefined,

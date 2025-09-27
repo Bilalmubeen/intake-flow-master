@@ -53,16 +53,16 @@ export const clientIntakeSchema = z.object({
     .regex(/^[\d\s,]+$/, "NPI numbers must contain only digits, spaces, and commas"),
   
   // Enrollment Setup
-  insurancePlans: z.array(z.string())
-    .min(1, "At least one insurance plan must be selected"),
-  
-  enrollmentEffectiveDate: z.date({
-    required_error: "Enrollment effective date is required"
-  }),
-  
-  notes: z.string()
-    .max(2000, "Notes must be less than 2000 characters")
-    .optional(),
+  insurancePlans: z.array(z.object({
+    planId: z.string(),
+    enrollmentEffectiveDate: z.date({
+      required_error: "Enrollment effective date is required"
+    }),
+    notes: z.string()
+      .max(2000, "Notes must be less than 2000 characters")
+      .optional()
+      .default("")
+  })).min(1, "At least one insurance plan must be selected"),
   
   // Policies & Documentation
   policyAcknowledgment: z.boolean()

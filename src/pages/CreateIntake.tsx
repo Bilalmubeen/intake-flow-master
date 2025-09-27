@@ -27,7 +27,12 @@ export function CreateIntake() {
     try {
       const recordId = await createRecord({
         ...data,
-        status
+        status,
+        insurancePlans: data.insurancePlans.map(plan => ({
+          planId: plan.planId,
+          enrollmentEffectiveDate: plan.enrollmentEffectiveDate,
+          notes: plan.notes || ""
+        }))
       });
 
       if (status === "submitted") {

@@ -32,7 +32,10 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         submittedAt: record.submittedAt ? new Date(record.submittedAt) : undefined,
         reviewedAt: record.reviewedAt ? new Date(record.reviewedAt) : undefined,
         certificationExpiryDate: record.certificationExpiryDate ? new Date(record.certificationExpiryDate) : null,
-        enrollmentEffectiveDate: record.enrollmentEffectiveDate ? new Date(record.enrollmentEffectiveDate) : null,
+        insurancePlans: record.insurancePlans?.map((plan: any) => ({
+          ...plan,
+          enrollmentEffectiveDate: plan.enrollmentEffectiveDate ? new Date(plan.enrollmentEffectiveDate) : null
+        })) || [],
         slaAgreedDate: record.slaAgreedDate ? new Date(record.slaAgreedDate) : null,
         statusHistory: record.statusHistory.map((entry: any) => ({
           ...entry,
@@ -67,8 +70,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       clearinghouseSelection: data.clearinghouseSelection || "",
       providerNpiNumbers: data.providerNpiNumbers || "",
       insurancePlans: data.insurancePlans || [],
-      enrollmentEffectiveDate: data.enrollmentEffectiveDate || null,
-      notes: data.notes || "",
       policyAcknowledgment: data.policyAcknowledgment || false,
       policyFiles: data.policyFiles || [],
       slaAgreedDate: data.slaAgreedDate || null,
