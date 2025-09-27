@@ -1,0 +1,237 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form } from "@/components/ui/form";
+import { clientIntakeSchema, ClientIntakeFormData } from "@/lib/validations";
+import { ClientInfoSection } from "./sections/ClientInfoSection";
+import { CredentialingSection } from "./sections/CredentialingSection";
+import { BillingSection } from "./sections/BillingSection";
+import { EnrollmentSection } from "./sections/EnrollmentSection";
+import { PoliciesSection } from "./sections/PoliciesSection";
+import { SlaSection } from "./sections/SlaSection";
+import { ProgressSection } from "./sections/ProgressSection";
+import { ClientIntakeRecord, WorkflowState } from "@/types";
+import { useAuth } from "@/contexts/AuthContext";
+import { Save, Send, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+interface ClientIntakeFormProps {
+  initialData?: Partial<ClientIntakeRecord>;
+  onSave: (data: ClientIntakeFormData, status: WorkflowState) => Promise<void>;
+  onCancel?: () => void;
+  isEditing?: boolean;
+  currentStatus?: WorkflowState;
+}
+
+export function ClientIntakeForm({ 
+  initialData, 
+  onSave, 
+  onCancel,
+  isEditing = false,
+  currentStatus = "draft"
+}: ClientIntakeFormProps) {
+  const { hasPermission } = useAuth();
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  const form = useForm<ClientIntakeFormData>({
+    resolver: zodResolver(clientIntakeSchema),
+    defaultValues: {
+      clientName: initialData?.clientName || "",
+      contactEmail: initialData?.contactEmail || "",
+      contactPhone: initialData?.contactPhone || "",
+      practiceAddress: initialData?.practiceAddress || "",
+      pointOfContact: initialData?.pointOfContact || "",
+      licenseNumbers: initialData?.licenseNumbers || "",
+      certificationExpiryDate: initialData?.certificationExpiryDate || undefined,
+      complianceDocuments: initialData?.complianceDocuments || [],
+      payerEnrollmentStatus: initialData?.payerEnrollmentStatus || "",
+      clearinghouseSelection: initialData?.clearinghouseSelection || "",
+      providerNpiNumbers: initialData?.providerNpiNumbers || "",
+      insurancePlans: initialData?.insurancePlans || [],
+      enrollmentEffectiveDate: initialData?.enrollmentEffectiveDate || undefined,
+      notes: initialData?.notes || "",
+      policyAcknowledgment: initialData?.policyAcknowledgment || false,
+      policyFiles: initialData?.policyFiles || [],
+      slaAgreedDate: initialData?.slaAgreedDate || undefined,
+      meetingCadence: initialData?.meetingCadence || "",
+      reviewerComments: initialData?.reviewerComments || "",
+    },
+  });
+
+  const canEdit = currentStatus === "draft" || currentStatus === "rejected";
+  const canSubmit = hasPermission("intake_user") && canEdit;
+  const showProgressSection = hasPermission(["reviewer_manager", "administrator"]);
+
+  const handleSave = async (status: WorkflowState) => {
+    setIsSubmitting(true);
+    try {
+      const data = form.getValues();
+      await onSave(data, status);
+      if (status === "submitted") {
+        navigate("/records");
+      }
+    } catch (error) {
+      console.error("Error saving form:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleSaveDraft = () => {
+    handleSave("draft");
+  };
+
+  const handleSubmit = form.handleSubmit(async (data) => {
+    await handleSave("submitted");
+  });
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => onCancel ? onCancel() : navigate(-1)}
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Back
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold">
+              {isEditing ? "Edit Client Intake" : "New Client Intake"}
+            </h1>
+            <p className="text-muted-foreground">
+              Complete all required fields and submit for review
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Client & Onboarding Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Client & Onboarding Information</CardTitle>
+              <CardDescription>
+                Basic client details and contact information
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ClientInfoSection form={form} disabled={!canEdit} />
+            </CardContent>
+          </Card>
+
+          {/* Credentialing & Compliance */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Credentialing & Compliance</CardTitle>
+              <CardDescription>
+                License information and compliance documentation
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <CredentialingSection form={form} disabled={!canEdit} />
+            </CardContent>
+          </Card>
+
+          {/* Billing Setup */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Billing Setup</CardTitle>
+              <CardDescription>
+                Payer enrollment and provider information
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <BillingSection form={form} disabled={!canEdit} />
+            </CardContent>
+          </Card>
+
+          {/* Enrollment Setup */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Enrollment Setup</CardTitle>
+              <CardDescription>
+                Insurance plans and enrollment details
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <EnrollmentSection form={form} disabled={!canEdit} />
+            </CardContent>
+          </Card>
+
+          {/* Policies & Documentation */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Policies & Documentation</CardTitle>
+              <CardDescription>
+                Policy acknowledgment and file attachments
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <PoliciesSection form={form} disabled={!canEdit} />
+            </CardContent>
+          </Card>
+
+          {/* SLAs & Meetings */}
+          <Card>
+            <CardHeader>
+              <CardTitle>SLAs & Meetings</CardTitle>
+              <CardDescription>
+                Service level agreements and meeting schedules
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <SlaSection form={form} disabled={!canEdit} />
+            </CardContent>
+          </Card>
+
+          {/* Progress Tracking - Only for reviewers/admins */}
+          {showProgressSection && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Progress Tracking</CardTitle>
+                <CardDescription>
+                  Review status and comments
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ProgressSection form={form} disabled={false} />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Form Actions */}
+          {canEdit && (
+            <div className="flex gap-4 pt-6 border-t">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleSaveDraft}
+                disabled={isSubmitting}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Save Draft
+              </Button>
+              
+              {canSubmit && (
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Submit for Review
+                </Button>
+              )}
+            </div>
+          )}
+        </form>
+      </Form>
+    </div>
+  );
+}
