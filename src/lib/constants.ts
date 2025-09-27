@@ -32,8 +32,7 @@ export const INSURANCE_PLANS_OPTIONS: DropdownOption[] = [
   { value: "humana", label: "Humana" },
   { value: "medicare", label: "Medicare" },
   { value: "medicaid", label: "Medicaid" },
-  { value: "tricare", label: "TRICARE" },
-  { value: "other", label: "Other" }
+  { value: "tricare", label: "TRICARE" }
 ];
 
 export const MEETING_CADENCE_OPTIONS: DropdownOption[] = [
