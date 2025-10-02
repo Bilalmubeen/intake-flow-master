@@ -56,7 +56,6 @@ export function Login() {
             <img src={trueBillingLogo} alt="TrueBilling" className="h-16" />
           </div>
           <h1 className="text-2xl font-bold">Client Onboarding System</h1>
-          <p className="text-muted-foreground">Sign in to access the client management system</p>
         </div>
 
         <Card>
