@@ -32,6 +32,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
         submittedAt: record.submittedAt ? new Date(record.submittedAt) : undefined,
         reviewedAt: record.reviewedAt ? new Date(record.reviewedAt) : undefined,
         certificationExpiryDate: record.certificationExpiryDate ? new Date(record.certificationExpiryDate) : null,
+        startDate: record.startDate ? new Date(record.startDate) : null,
+        kickoffCallDate: record.kickoffCallDate ? new Date(record.kickoffCallDate) : null,
         insurancePlans: record.insurancePlans?.map((plan: any) => ({
           ...plan,
           enrollmentEffectiveDate: plan.enrollmentEffectiveDate ? new Date(plan.enrollmentEffectiveDate) : null
@@ -58,35 +60,93 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     
     const newRecord: ClientIntakeRecord = {
       id: crypto.randomUUID(),
+      // Client & Onboarding Info
       clientName: data.clientName || "",
       contactName: data.contactName || "",
       contactEmail: data.contactEmail || "",
       contactPhone: data.contactPhone || "",
       practiceAddress: data.practiceAddress || "",
       pointOfContact: data.pointOfContact || "",
+      startDate: data.startDate || null,
+      kickoffCallCompleted: data.kickoffCallCompleted || "pending",
+      kickoffCallDate: data.kickoffCallDate || null,
+      assignedAccountManager: data.assignedAccountManager || "",
+      assignedBillingLead: data.assignedBillingLead || "",
+      assignedCredentialingLead: data.assignedCredentialingLead || "",
+      assignedITLead: data.assignedITLead || "",
+      practiceFacilityName: data.practiceFacilityName || "",
+      practiceFacilityAddress: data.practiceFacilityAddress || "",
+      // Credentialing & Compliance
       licenseNumbers: data.licenseNumbers || "",
       certificationExpiryDate: data.certificationExpiryDate || null,
       complianceDocuments: data.complianceDocuments || [],
-      payerEnrollmentStatus: data.payerEnrollmentStatus || "",
+      medicareEnrollmentStatus: data.medicareEnrollmentStatus || "pending",
+      medicaidEnrollmentStatus: data.medicaidEnrollmentStatus || "pending",
+      commercialPayerEnrollmentStatus: data.commercialPayerEnrollmentStatus || "pending",
+      caqhProfileStatus: data.caqhProfileStatus || "pending",
+      pecosAccessReceived: data.pecosAccessReceived || false,
+      credentialingTrackerCreated: data.credentialingTrackerCreated || false,
+      w9Received: data.w9Received || false,
+      licenseCopyReceived: data.licenseCopyReceived || false,
+      deaCopyReceived: data.deaCopyReceived || false,
+      boardCertReceived: data.boardCertReceived || false,
+      degreeCertReceived: data.degreeCertReceived || false,
+      malpracticeCOIReceived: data.malpracticeCOIReceived || false,
+      // Billing Setup
+      payerEnrollmentStatus: data.payerEnrollmentStatus || "pending",
       clearinghouseSelection: data.clearinghouseSelection || "",
       providerNpiNumbers: data.providerNpiNumbers || "",
+      billingPathway: data.billingPathway || "",
+      chargeMasterCreated: data.chargeMasterCreated || false,
+      feeSchedulePercentage: data.feeSchedulePercentage || null,
+      payerFeeScheduleUploaded: data.payerFeeScheduleUploaded || false,
+      testClaimsSubmitted: data.testClaimsSubmitted || false,
+      // Enrollment Setup
       insurancePlans: data.insurancePlans || [],
+      eraEnrollmentStatus: data.eraEnrollmentStatus || "pending",
+      ediEnrollmentStatus: data.ediEnrollmentStatus || "pending",
+      eftEnrollmentStatus: data.eftEnrollmentStatus || "pending",
+      simpliBillPortalSetup: data.simpliBillPortalSetup || false,
+      sftpSetupComplete: data.sftpSetupComplete || false,
+      eligibilityToolAccess: data.eligibilityToolAccess || false,
+      allPortalAccessComplete: data.allPortalAccessComplete || false,
+      loginCredentialsShared: data.loginCredentialsShared || false,
+      portalTestingCompleted: data.portalTestingCompleted || false,
+      // Policies & Documentation
       policyAcknowledgment: data.policyAcknowledgment || false,
       policyFiles: data.policyFiles || [],
+      patientStatementProcessFinalized: data.patientStatementProcessFinalized || false,
+      refundPolicyFinalized: data.refundPolicyFinalized || false,
+      creditBalancePolicyFinalized: data.creditBalancePolicyFinalized || false,
+      patientCallHandlingSetup: data.patientCallHandlingSetup || false,
+      billingManualDelivered: data.billingManualDelivered || false,
+      userGuideDelivered: data.userGuideDelivered || false,
+      simpliBillAppOffered: data.simpliBillAppOffered || false,
+      reportingRequirementsProvided: data.reportingRequirementsProvided || false,
+      // SLAs & Meetings
       slaAgreedDate: data.slaAgreedDate || null,
       meetingCadence: data.meetingCadence || "",
-      status: "draft",
-      reviewerComments: "",
+      slaChargeLagSet: data.slaChargeLagSet || false,
+      slaPaymentPostingSet: data.slaPaymentPostingSet || false,
+      slaDenialFollowUpSet: data.slaDenialFollowUpSet || false,
+      weeklyInternalMeetingsSetup: data.weeklyInternalMeetingsSetup || false,
+      weeklyClientMeetingsSetup: data.weeklyClientMeetingsSetup || false,
+      // Progress Tracking
+      status: data.status || "draft",
+      reviewerComments: data.reviewerComments || "",
+      tasksCompletedPercentage: data.tasksCompletedPercentage || null,
+      // Metadata
       createdAt: new Date(),
       updatedAt: new Date(),
       createdBy: user.id,
       lastModifiedBy: user.id,
       statusHistory: [{
         id: crypto.randomUUID(),
-        status: "draft",
+        status: data.status || "draft",
         timestamp: new Date(),
         userId: user.id,
-        userName: user.name
+        userName: user.name,
+        comments: "Record created"
       }]
     };
 
@@ -147,7 +207,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (record.id === id) {
         const updatedRecord = {
           ...record,
-          status: newStatus === "rejected" ? "draft" : newStatus, // Rejected records return to draft
+          status: newStatus === "rejected" ? "draft" : newStatus,
           updatedAt: new Date(),
           lastModifiedBy: user.id,
           statusHistory: [...record.statusHistory, statusEntry]

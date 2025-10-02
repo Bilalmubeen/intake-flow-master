@@ -29,6 +29,24 @@ export const clientIntakeSchema = z.object({
   
   pointOfContact: z.string()
     .min(1, "Point of contact is required"),
+
+  startDate: z.date().nullable().optional(),
+  
+  kickoffCallCompleted: z.string().default("pending"),
+  
+  kickoffCallDate: z.date().nullable().optional(),
+  
+  assignedAccountManager: z.string().default(""),
+  
+  assignedBillingLead: z.string().default(""),
+  
+  assignedCredentialingLead: z.string().default(""),
+  
+  assignedITLead: z.string().default(""),
+  
+  practiceFacilityName: z.string().default(""),
+  
+  practiceFacilityAddress: z.string().default(""),
   
   // Credentialing & Compliance
   licenseNumbers: z.string()
@@ -44,6 +62,19 @@ export const clientIntakeSchema = z.object({
   ),
   
   complianceDocuments: z.array(z.string()),
+
+  medicareEnrollmentStatus: z.string().default("pending"),
+  medicaidEnrollmentStatus: z.string().default("pending"),
+  commercialPayerEnrollmentStatus: z.string().default("pending"),
+  caqhProfileStatus: z.string().default("pending"),
+  pecosAccessReceived: z.boolean().default(false),
+  credentialingTrackerCreated: z.boolean().default(false),
+  w9Received: z.boolean().default(false),
+  licenseCopyReceived: z.boolean().default(false),
+  deaCopyReceived: z.boolean().default(false),
+  boardCertReceived: z.boolean().default(false),
+  degreeCertReceived: z.boolean().default(false),
+  malpracticeCOIReceived: z.boolean().default(false),
   
   // Billing Setup
   payerEnrollmentStatus: z.string()
@@ -56,6 +87,12 @@ export const clientIntakeSchema = z.object({
     .trim()
     .min(1, "Provider NPI numbers are required")
     .regex(/^[\d\s,]+$/, "NPI numbers must contain only digits, spaces, and commas"),
+
+  billingPathway: z.string().default(""),
+  chargeMasterCreated: z.boolean().default(false),
+  feeSchedulePercentage: z.number().min(0).max(100).nullable().optional(),
+  payerFeeScheduleUploaded: z.boolean().default(false),
+  testClaimsSubmitted: z.boolean().default(false),
   
   // Enrollment Setup
   insurancePlans: z.array(z.object({
@@ -68,12 +105,31 @@ export const clientIntakeSchema = z.object({
       .optional()
       .default("")
   })).min(1, "At least one insurance plan must be selected"),
+
+  eraEnrollmentStatus: z.string().default("pending"),
+  ediEnrollmentStatus: z.string().default("pending"),
+  eftEnrollmentStatus: z.string().default("pending"),
+  simpliBillPortalSetup: z.boolean().default(false),
+  sftpSetupComplete: z.boolean().default(false),
+  eligibilityToolAccess: z.boolean().default(false),
+  allPortalAccessComplete: z.boolean().default(false),
+  loginCredentialsShared: z.boolean().default(false),
+  portalTestingCompleted: z.boolean().default(false),
   
   // Policies & Documentation
   policyAcknowledgment: z.boolean()
     .refine((val) => val === true, "Policy acknowledgment is required"),
   
   policyFiles: z.array(z.string()),
+
+  patientStatementProcessFinalized: z.boolean().default(false),
+  refundPolicyFinalized: z.boolean().default(false),
+  creditBalancePolicyFinalized: z.boolean().default(false),
+  patientCallHandlingSetup: z.boolean().default(false),
+  billingManualDelivered: z.boolean().default(false),
+  userGuideDelivered: z.boolean().default(false),
+  simpliBillAppOffered: z.boolean().default(false),
+  reportingRequirementsProvided: z.boolean().default(false),
   
   // SLAs & Meetings
   slaAgreedDate: z.date({
@@ -82,11 +138,19 @@ export const clientIntakeSchema = z.object({
   
   meetingCadence: z.string()
     .min(1, "Meeting cadence is required"),
+
+  slaChargeLagSet: z.boolean().default(false),
+  slaPaymentPostingSet: z.boolean().default(false),
+  slaDenialFollowUpSet: z.boolean().default(false),
+  weeklyInternalMeetingsSetup: z.boolean().default(false),
+  weeklyClientMeetingsSetup: z.boolean().default(false),
   
   // Progress Tracking
   reviewerComments: z.string()
     .max(2000, "Reviewer comments must be less than 2000 characters")
     .optional(),
+
+  tasksCompletedPercentage: z.number().min(0).max(100).nullable().optional(),
 });
 
 export type ClientIntakeFormData = z.infer<typeof clientIntakeSchema>;
