@@ -24,11 +24,14 @@ import {
 } from "@/components/ui/select";
 
 type DropdownCategory = 
+  | "assigned_account_manager"
+  | "assigned_billing_lead"
   | "point_of_contact"
   | "payer_enrollment_status"
   | "clearinghouse"
   | "insurance_plans"
-  | "meeting_cadence";
+  | "meeting_cadence"
+  | "practice_facility";
 
 interface DropdownOption {
   value: string;
@@ -39,12 +42,27 @@ export function AdminConfig() {
   const { hasPermission } = useAuth();
   const { toast } = useToast();
   const [webhookUrl, setWebhookUrl] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<DropdownCategory>("insurance_plans");
+  const [selectedCategory, setSelectedCategory] = useState<DropdownCategory>("assigned_account_manager");
   const [newOptionValue, setNewOptionValue] = useState("");
   const [newOptionLabel, setNewOptionLabel] = useState("");
 
   // Mock dropdown data - in production, this would come from a database
   const [dropdownData, setDropdownData] = useState<Record<DropdownCategory, DropdownOption[]>>({
+    assigned_account_manager: [
+      { value: "murshid", label: "Murshid" },
+      { value: "bisma", label: "Bisma" },
+      { value: "sarah", label: "Sarah" },
+    ],
+    assigned_billing_lead: [
+      { value: "staff_1", label: "Staff Member 1" },
+      { value: "staff_2", label: "Staff Member 2" },
+      { value: "staff_3", label: "Staff Member 3" },
+    ],
+    practice_facility: [
+      { value: "practice_1", label: "Practice 1" },
+      { value: "practice_2", label: "Practice 2" },
+      { value: "practice_3", label: "Practice 3" },
+    ],
     point_of_contact: [
       { value: "primary_physician", label: "Primary Physician" },
       { value: "practice_manager", label: "Practice Manager" },
@@ -191,6 +209,9 @@ export function AdminConfig() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="assigned_account_manager">Assigned Account Manager</SelectItem>
+                    <SelectItem value="assigned_billing_lead">Assigned Billing Lead</SelectItem>
+                    <SelectItem value="practice_facility">Practice/Facility</SelectItem>
                     <SelectItem value="point_of_contact">Point of Contact</SelectItem>
                     <SelectItem value="payer_enrollment_status">Payer Enrollment Status</SelectItem>
                     <SelectItem value="clearinghouse">Clearinghouse</SelectItem>

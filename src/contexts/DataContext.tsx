@@ -70,6 +70,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       startDate: data.startDate || null,
       kickoffCallCompleted: data.kickoffCallCompleted || "pending",
       kickoffCallDate: data.kickoffCallDate || null,
+      relationshipManager: data.relationshipManager || "",
       assignedAccountManager: data.assignedAccountManager || "",
       assignedBillingLead: data.assignedBillingLead || "",
       assignedCredentialingLead: data.assignedCredentialingLead || "",

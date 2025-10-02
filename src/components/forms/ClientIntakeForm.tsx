@@ -16,6 +16,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Save, Send, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { useSectionSave } from "@/hooks/useSectionSave";
+import { useToast } from "@/hooks/use-toast";
 
 interface ClientIntakeFormProps {
   initialData?: Partial<ClientIntakeRecord>;
@@ -35,6 +37,7 @@ export function ClientIntakeForm({
   const { hasPermission } = useAuth();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
   
   const form = useForm<ClientIntakeFormData>({
     resolver: zodResolver(clientIntakeSchema),
@@ -48,6 +51,7 @@ export function ClientIntakeForm({
       startDate: initialData?.startDate || undefined,
       kickoffCallCompleted: initialData?.kickoffCallCompleted || "pending",
       kickoffCallDate: initialData?.kickoffCallDate || undefined,
+      relationshipManager: initialData?.relationshipManager || "",
       assignedAccountManager: initialData?.assignedAccountManager || "",
       assignedBillingLead: initialData?.assignedBillingLead || "",
       assignedCredentialingLead: initialData?.assignedCredentialingLead || "",
@@ -113,6 +117,60 @@ export function ClientIntakeForm({
   const canSubmit = hasPermission("intake_user") && canEdit;
   const showProgressSection = hasPermission(["reviewer_manager", "administrator"]);
 
+  // Section save handler
+  const handleSectionSave = async (sectionData: Partial<ClientIntakeFormData>) => {
+    try {
+      await onSave(sectionData, currentStatus);
+      // Don't navigate - sections remain editable after save
+    } catch (error) {
+      throw error; // Let useSectionSave handle the error
+    }
+  };
+
+  const { saveSection: saveSectionBase, isSaving } = useSectionSave(form, handleSectionSave);
+
+  // Define section field mappings
+  const sectionFields = {
+    clientInfo: [
+      'clientName', 'contactName', 'contactEmail', 'contactPhone', 'practiceAddress',
+      'pointOfContact', 'startDate', 'kickoffCallCompleted', 'kickoffCallDate',
+      'relationshipManager', 'assignedAccountManager', 'assignedBillingLead',
+      'assignedCredentialingLead', 'assignedITLead', 'practiceFacilityName',
+      'practiceFacilityAddress'
+    ] as (keyof ClientIntakeFormData)[],
+    credentialing: [
+      'licenseNumbers', 'certificationExpiryDate', 'complianceDocuments',
+      'medicareEnrollmentStatus', 'medicaidEnrollmentStatus', 'commercialPayerEnrollmentStatus',
+      'caqhProfileStatus', 'pecosAccessReceived', 'credentialingTrackerCreated',
+      'w9Received', 'licenseCopyReceived', 'deaCopyReceived', 'boardCertReceived',
+      'degreeCertReceived', 'malpracticeCOIReceived'
+    ] as (keyof ClientIntakeFormData)[],
+    billing: [
+      'payerEnrollmentStatus', 'clearinghouseSelection', 'providerNpiNumbers',
+      'billingPathway', 'chargeMasterCreated', 'feeSchedulePercentage',
+      'payerFeeScheduleUploaded', 'testClaimsSubmitted'
+    ] as (keyof ClientIntakeFormData)[],
+    enrollment: [
+      'insurancePlans', 'eraEnrollmentStatus', 'ediEnrollmentStatus', 'eftEnrollmentStatus',
+      'simpliBillPortalSetup', 'sftpSetupComplete', 'eligibilityToolAccess',
+      'allPortalAccessComplete', 'loginCredentialsShared', 'portalTestingCompleted'
+    ] as (keyof ClientIntakeFormData)[],
+    policies: [
+      'policyAcknowledgment', 'policyFiles', 'patientStatementProcessFinalized',
+      'refundPolicyFinalized', 'creditBalancePolicyFinalized', 'patientCallHandlingSetup',
+      'billingManualDelivered', 'userGuideDelivered', 'simpliBillAppOffered',
+      'reportingRequirementsProvided'
+    ] as (keyof ClientIntakeFormData)[],
+    sla: [
+      'slaAgreedDate', 'meetingCadence', 'slaChargeLagSet', 'slaPaymentPostingSet',
+      'slaDenialFollowUpSet', 'weeklyInternalMeetingsSetup', 'weeklyClientMeetingsSetup'
+    ] as (keyof ClientIntakeFormData)[],
+  };
+
+  const createSectionSaveHandler = (sectionKey: keyof typeof sectionFields) => async () => {
+    await saveSectionBase(sectionFields[sectionKey]);
+  };
+
   const handleSave = async (status: WorkflowState) => {
     setIsSubmitting(true);
     try {
@@ -170,7 +228,12 @@ export function ClientIntakeForm({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ClientInfoSection form={form} disabled={!canEdit} />
+              <ClientInfoSection 
+                form={form} 
+                disabled={!canEdit}
+                onSaveSection={createSectionSaveHandler('clientInfo')}
+                isSaving={isSaving}
+              />
             </CardContent>
           </Card>
 

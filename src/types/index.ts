@@ -22,10 +22,11 @@ export interface ClientIntakeRecord {
   startDate: Date | null;
   kickoffCallCompleted: string;
   kickoffCallDate: Date | null;
-  assignedAccountManager: string;
-  assignedBillingLead: string;
-  assignedCredentialingLead: string;
-  assignedITLead: string;
+  relationshipManager: string; // Required
+  assignedAccountManager: string; // Required
+  assignedBillingLead: string; // Required
+  assignedCredentialingLead: string; // Required
+  assignedITLead: string; // Optional
   practiceFacilityName: string;
   practiceFacilityAddress: string;
   

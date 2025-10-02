@@ -30,17 +30,25 @@ export const clientIntakeSchema = z.object({
   pointOfContact: z.string()
     .min(1, "Point of contact is required"),
 
-  startDate: z.date().nullable().optional(),
+  startDate: z.date({
+    required_error: "Start date is required",
+  }).nullable(),
   
   kickoffCallCompleted: z.string().default("pending"),
   
   kickoffCallDate: z.date().nullable().optional(),
   
-  assignedAccountManager: z.string().default(""),
+  relationshipManager: z.string()
+    .min(1, "Relationship Manager is required"),
   
-  assignedBillingLead: z.string().default(""),
+  assignedAccountManager: z.string()
+    .min(1, "Assigned Account Manager is required"),
   
-  assignedCredentialingLead: z.string().default(""),
+  assignedBillingLead: z.string()
+    .min(1, "Assigned Billing Lead is required"),
+  
+  assignedCredentialingLead: z.string()
+    .min(1, "Assigned Credentialing Lead is required"),
   
   assignedITLead: z.string().default(""),
   

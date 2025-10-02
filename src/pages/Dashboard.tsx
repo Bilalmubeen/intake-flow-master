@@ -26,12 +26,23 @@ export function Dashboard() {
     ? records 
     : records.filter(record => record.createdBy === user?.id);
 
+  // Count distinct payers across all records
+  const distinctPayers = new Set<string>();
+  userRecords.forEach(record => {
+    if (record.insurancePlans && Array.isArray(record.insurancePlans)) {
+      record.insurancePlans.forEach(plan => {
+        if (plan.planId) distinctPayers.add(plan.planId);
+      });
+    }
+  });
+
   const stats = {
-    total: userRecords.length,
+    payers: distinctPayers.size,
+    inProcess: userRecords.filter(r => r.status === "submitted" || r.status === "in_review").length,
+    approved: userRecords.filter(r => r.status === "approved").length,
     draft: userRecords.filter(r => r.status === "draft").length,
     submitted: userRecords.filter(r => r.status === "submitted").length,
     inReview: userRecords.filter(r => r.status === "in_review").length,
-    approved: userRecords.filter(r => r.status === "approved").length,
     rejected: userRecords.filter(r => r.status === "rejected").length,
   };
 
@@ -40,6 +51,9 @@ export function Dashboard() {
     .slice(0, 5);
 
   const pendingReviews = records.filter(r => r.status === "submitted").length;
+  
+  // Hide recent records for intake_user role only
+  const showRecentRecords = user?.role !== "intake_user";
 
   return (
     <div className="space-y-6">
@@ -65,26 +79,26 @@ export function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Records</CardTitle>
-            <FileText className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Payers</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
+            <div className="text-2xl font-bold">{stats.payers}</div>
             <p className="text-xs text-muted-foreground">
-              {hasPermission(["reviewer_manager", "administrator"]) ? "All records" : "Your records"}
+              Distinct payers
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">In Progress</CardTitle>
+            <CardTitle className="text-sm font-medium">In Process</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{stats.draft + stats.submitted + stats.inReview}</div>
+            <div className="text-2xl font-bold">{stats.inProcess}</div>
             <p className="text-xs text-muted-foreground">
-              Draft, submitted & in review
+              Submitted & in review
             </p>
           </CardContent>
         </Card>
@@ -106,7 +120,7 @@ export function Dashboard() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending Review</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{pendingReviews}</div>
@@ -120,44 +134,46 @@ export function Dashboard() {
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Records</CardTitle>
-            <CardDescription>
-              Latest client intake submissions
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {recentRecords.length === 0 ? (
-              <div className="text-center text-muted-foreground py-6">
-                <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                <p>No records yet</p>
-                {hasPermission("intake_user") && (
-                  <Button asChild className="mt-4" variant="outline">
-                    <Link to="/intake/new">Create your first intake</Link>
-                  </Button>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {recentRecords.map((record) => (
-                  <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex-1">
-                      <p className="font-medium">{record.clientName}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {new Date(record.updatedAt).toLocaleDateString()}
-                      </p>
+        {showRecentRecords && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Records</CardTitle>
+              <CardDescription>
+                Latest client intake submissions
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {recentRecords.length === 0 ? (
+                <div className="text-center text-muted-foreground py-6">
+                  <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>No records yet</p>
+                  {hasPermission("intake_user") && (
+                    <Button asChild className="mt-4" variant="outline">
+                      <Link to="/intake/new">Create your first intake</Link>
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {recentRecords.map((record) => (
+                    <div key={record.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div className="flex-1">
+                        <p className="font-medium">{record.clientName}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(record.updatedAt).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <StatusBadge status={record.status} />
                     </div>
-                    <StatusBadge status={record.status} />
-                  </div>
-                ))}
-                <Button asChild variant="outline" className="w-full">
-                  <Link to="/records">View All Records</Link>
-                </Button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                  ))}
+                  <Button asChild variant="outline" className="w-full">
+                    <Link to="/records">View All Records</Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         <Card>
           <CardHeader>
