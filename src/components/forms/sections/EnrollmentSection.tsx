@@ -10,7 +10,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { CalendarIcon, Plus, X } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { INSURANCE_PLANS_OPTIONS } from "@/lib/constants";
+import { INSURANCE_PLANS_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 
 interface EnrollmentSectionProps {
@@ -73,7 +74,6 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
     const standardPlan = INSURANCE_PLANS_OPTIONS.find(option => option.value === planId);
     if (standardPlan) return standardPlan.label;
     
-    // For custom plans, extract the name from the notes field
     if (planId.startsWith('custom_')) {
       const customPlan = selectedPlans.find(p => p.planId === planId);
       if (customPlan?.notes) {
@@ -87,6 +87,205 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
 
   return (
     <div className="space-y-6">
+      {/* ERA/EDI/EFT Enrollment Statuses */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <FormField
+          control={form.control}
+          name="eraEnrollmentStatus"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>ERA Enrollment Status</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="ediEnrollmentStatus"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>EDI Enrollment Status</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="eftEnrollmentStatus"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>EFT Enrollment Status</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {STATUS_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      {/* Portal & System Setup Checklist */}
+      <div className="space-y-4">
+        <h4 className="text-sm font-medium">Portal & System Setup</h4>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="simpliBillPortalSetup"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>SimpliBill Portal Setup</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="sftpSetupComplete"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>SFTP Setup Complete</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="eligibilityToolAccess"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Eligibility Tool Access</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="allPortalAccessComplete"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>All Portal Access Complete</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="loginCredentialsShared"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Login Credentials Shared</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="portalTestingCompleted"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    disabled={disabled}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Portal Testing Completed</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+        </div>
+      </div>
+
+      {/* Insurance Plans Selection */}
       <FormField
         control={form.control}
         name="insurancePlans"
@@ -123,7 +322,6 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
         )}
       />
 
-      
       {/* Add Custom Insurance Plan */}
       <div className="space-y-4">
         <div>
@@ -148,7 +346,6 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
           </div>
         </div>
 
-        {/* Show added custom plans */}
         {selectedPlans.filter(plan => plan.planId.startsWith('custom_')).length > 0 && (
           <div className="space-y-2">
             <label className="text-sm font-medium">Custom Insurance Plans:</label>
@@ -226,7 +423,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                           selected={plan.enrollmentEffectiveDate}
                           onSelect={(date) => updatePlanField(plan.planId, 'enrollmentEffectiveDate', date)}
                           initialFocus
-                          className={cn("p-3 pointer-events-auto")}
+                          className="pointer-events-auto"
                         />
                       </PopoverContent>
                     </Popover>
