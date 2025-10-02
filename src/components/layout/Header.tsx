@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, Bell } from "lucide-react";
-import trueBillingLogo from "@/assets/truebilling-logo.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,7 +20,6 @@ export function Header() {
         <SidebarTrigger className="-ml-1" />
         
         <div className="flex-1 flex items-center gap-3">
-          <img src={trueBillingLogo} alt="TrueBilling" className="h-8" />
           <h1 className="text-lg font-semibold">Client Onboarding System</h1>
         </div>
 

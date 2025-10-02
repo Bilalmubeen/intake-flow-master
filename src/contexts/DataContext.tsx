@@ -59,6 +59,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     const newRecord: ClientIntakeRecord = {
       id: crypto.randomUUID(),
       clientName: data.clientName || "",
+      contactName: data.contactName || "",
       contactEmail: data.contactEmail || "",
       contactPhone: data.contactPhone || "",
       practiceAddress: data.practiceAddress || "",

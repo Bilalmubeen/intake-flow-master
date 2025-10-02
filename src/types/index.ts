@@ -14,6 +14,7 @@ export interface ClientIntakeRecord {
   
   // Client & Onboarding Info
   clientName: string;
+  contactName: string;
   contactEmail: string;
   contactPhone: string;
   practiceAddress: string;

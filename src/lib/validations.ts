@@ -4,8 +4,13 @@ export const clientIntakeSchema = z.object({
   // Client & Onboarding Info
   clientName: z.string()
     .trim()
-    .min(1, "Client name is required")
-    .max(100, "Client name must be less than 100 characters"),
+    .min(1, "Organization name is required")
+    .max(100, "Organization name must be less than 100 characters"),
+  
+  contactName: z.string()
+    .trim()
+    .min(1, "Contact name is required")
+    .max(100, "Contact name must be less than 100 characters"),
   
   contactEmail: z.string()
     .trim()

@@ -18,10 +18,28 @@ export function ClientInfoSection({ form, disabled = false }: ClientInfoSectionP
         name="clientName"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Client Name *</FormLabel>
+            <FormLabel>Organization Name *</FormLabel>
             <FormControl>
               <Input 
-                placeholder="Enter client name" 
+                placeholder="Enter organization name" 
+                disabled={disabled}
+                {...field} 
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name="contactName"
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Contact Name *</FormLabel>
+            <FormControl>
+              <Input 
+                placeholder="Enter contact name" 
                 disabled={disabled}
                 {...field} 
               />
