@@ -146,7 +146,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       if (record.id === id) {
         const updatedRecord = {
           ...record,
-          status: newStatus,
+          status: newStatus === "rejected" ? "draft" : newStatus, // Rejected records return to draft
           updatedAt: new Date(),
           lastModifiedBy: user.id,
           statusHistory: [...record.statusHistory, statusEntry]
@@ -195,15 +195,19 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
     return records.find(record => record.id === id);
   };
 
-  const triggerStatusChangeNotification = (status: WorkflowState, comments?: string) => {
-    // In a real app, this would trigger email notifications, webhooks, etc.
-    console.log(`Status change notification: ${status}`, { comments });
+  const triggerStatusChangeNotification = async (status: WorkflowState, comments?: string) => {
+    const { notifyReviewerOnSubmit, notifyUserOnApproval, notifyUserOnRejection } = await import("@/lib/notifications");
     
-    // Simulate SLA reminder check
+    // Get the record that was just updated
+    const record = records.find(r => r.status === status);
+    if (!record || !user) return;
+    
     if (status === "submitted") {
-      setTimeout(() => {
-        console.log("SLA reminder: Review pending for 3+ days");
-      }, 3 * 24 * 60 * 60 * 1000); // 3 days
+      await notifyReviewerOnSubmit(record, user.name);
+    } else if (status === "approved") {
+      await notifyUserOnApproval(record, user.name, comments);
+    } else if (status === "rejected") {
+      await notifyUserOnRejection(record, user.name, comments || "");
     }
   };
 

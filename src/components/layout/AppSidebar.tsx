@@ -23,6 +23,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
+import trueBillingLogo from "@/assets/truebilling-logo.png";
 
 const menuItems = [
   {
@@ -94,12 +95,11 @@ export function AppSidebar() {
 
       <SidebarContent>
         <div className="p-4 border-b">
-          <div className="flex items-center gap-2">
-            <Building2 className="h-6 w-6 text-primary" />
+          <div className="flex flex-col items-center gap-2">
+            <img src={trueBillingLogo} alt="TrueBilling" className="h-10 object-contain" />
             {!collapsed && (
-              <div>
-                <h2 className="text-lg font-semibold">DVP Intake</h2>
-                <p className="text-xs text-muted-foreground">Client Management</p>
+              <div className="text-center">
+                <h2 className="text-sm font-semibold">Client Onboarding</h2>
               </div>
             )}
           </div>

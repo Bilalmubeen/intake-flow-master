@@ -10,6 +10,8 @@ import { Login } from "@/pages/Login";
 import { Dashboard } from "@/pages/Dashboard";
 import { CreateIntake } from "@/pages/CreateIntake";
 import { Records } from "@/pages/Records";
+import { ReviewConsole } from "@/pages/ReviewConsole";
+import { AdminConfig } from "@/pages/AdminConfig";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Header } from "@/components/layout/Header";
 import NotFound from "./pages/NotFound";
@@ -70,6 +72,16 @@ const App = () => (
               <Route path="/records/all" element={
                 <ProtectedRoute>
                   <Records />
+                </ProtectedRoute>
+              } />
+              <Route path="/review" element={
+                <ProtectedRoute>
+                  <ReviewConsole />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <AdminConfig />
                 </ProtectedRoute>
               } />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
