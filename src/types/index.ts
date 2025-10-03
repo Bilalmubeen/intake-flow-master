@@ -18,6 +18,8 @@ export interface ClientIntakeRecord {
   contactEmail: string;
   contactPhone: string;
   practiceAddress: string;
+  practiceState: string;
+  practiceZipCode: string;
   pointOfContact: string;
   startDate: Date | null;
   kickoffCallCompleted: string;

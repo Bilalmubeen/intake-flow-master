@@ -8,7 +8,7 @@ export const STATUS_OPTIONS: DropdownOption[] = [
   { value: "not_required", label: "Not Required" },
 ];
 
-// Staff Assignment Options
+// Staff Assignment Options (defaults - will be overridden by admin-managed options)
 export const ACCOUNT_MANAGER_OPTIONS: DropdownOption[] = [
   { value: "murshid", label: "Murshid" },
   { value: "bisma", label: "Bisma" },
@@ -34,11 +34,65 @@ export const CLEARINGHOUSE_OPTIONS: DropdownOption[] = [
   { value: "zirmed", label: "Zirmed" },
 ];
 
-// Practice/Facility Options
+// Practice/Facility Options (defaults - will be overridden by admin-managed options)
 export const PRACTICE_FACILITY_OPTIONS: DropdownOption[] = [
   { value: "practice_1", label: "Practice 1" },
   { value: "practice_2", label: "Practice 2" },
   { value: "practice_3", label: "Practice 3" },
+];
+
+// US States for address fields
+export const US_STATES: DropdownOption[] = [
+  { value: "AL", label: "Alabama" },
+  { value: "AK", label: "Alaska" },
+  { value: "AZ", label: "Arizona" },
+  { value: "AR", label: "Arkansas" },
+  { value: "CA", label: "California" },
+  { value: "CO", label: "Colorado" },
+  { value: "CT", label: "Connecticut" },
+  { value: "DE", label: "Delaware" },
+  { value: "FL", label: "Florida" },
+  { value: "GA", label: "Georgia" },
+  { value: "HI", label: "Hawaii" },
+  { value: "ID", label: "Idaho" },
+  { value: "IL", label: "Illinois" },
+  { value: "IN", label: "Indiana" },
+  { value: "IA", label: "Iowa" },
+  { value: "KS", label: "Kansas" },
+  { value: "KY", label: "Kentucky" },
+  { value: "LA", label: "Louisiana" },
+  { value: "ME", label: "Maine" },
+  { value: "MD", label: "Maryland" },
+  { value: "MA", label: "Massachusetts" },
+  { value: "MI", label: "Michigan" },
+  { value: "MN", label: "Minnesota" },
+  { value: "MS", label: "Mississippi" },
+  { value: "MO", label: "Missouri" },
+  { value: "MT", label: "Montana" },
+  { value: "NE", label: "Nebraska" },
+  { value: "NV", label: "Nevada" },
+  { value: "NH", label: "New Hampshire" },
+  { value: "NJ", label: "New Jersey" },
+  { value: "NM", label: "New Mexico" },
+  { value: "NY", label: "New York" },
+  { value: "NC", label: "North Carolina" },
+  { value: "ND", label: "North Dakota" },
+  { value: "OH", label: "Ohio" },
+  { value: "OK", label: "Oklahoma" },
+  { value: "OR", label: "Oregon" },
+  { value: "PA", label: "Pennsylvania" },
+  { value: "RI", label: "Rhode Island" },
+  { value: "SC", label: "South Carolina" },
+  { value: "SD", label: "South Dakota" },
+  { value: "TN", label: "Tennessee" },
+  { value: "TX", label: "Texas" },
+  { value: "UT", label: "Utah" },
+  { value: "VT", label: "Vermont" },
+  { value: "VA", label: "Virginia" },
+  { value: "WA", label: "Washington" },
+  { value: "WV", label: "West Virginia" },
+  { value: "WI", label: "Wisconsin" },
+  { value: "WY", label: "Wyoming" },
 ];
 
 // Legacy/Compatibility Options

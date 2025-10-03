@@ -118,12 +118,13 @@ export function ClientIntakeForm({
   const showProgressSection = hasPermission(["reviewer_manager", "administrator"]);
 
   // Section save handler
-  const handleSectionSave = async (sectionData: Partial<ClientIntakeFormData>) => {
+  const handleSectionSave = async (sectionData: Partial<ClientIntakeFormData>): Promise<boolean> => {
     try {
       await onSave(sectionData, currentStatus);
-      // Don't navigate - sections remain editable after save
+      return true;
     } catch (error) {
-      throw error; // Let useSectionSave handle the error
+      console.error("Section save error:", error);
+      return false;
     }
   };
 

@@ -27,6 +27,14 @@ export const clientIntakeSchema = z.object({
     .min(1, "Practice address is required")
     .max(500, "Address must be less than 500 characters"),
   
+  practiceState: z.string()
+    .min(1, "State is required"),
+  
+  practiceZipCode: z.string()
+    .min(5, "Zip code must be 5 digits")
+    .max(5, "Zip code must be 5 digits")
+    .regex(/^\d{5}$/, "Zip code must be exactly 5 digits"),
+  
   pointOfContact: z.string()
     .min(1, "Point of contact is required"),
 

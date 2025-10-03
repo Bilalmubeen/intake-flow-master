@@ -3,7 +3,7 @@ import { ClientIntakeFormData } from "@/lib/validations";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { POINT_OF_CONTACT_OPTIONS, ACCOUNT_MANAGER_OPTIONS, STAFF_OPTIONS, STATUS_OPTIONS, PRACTICE_FACILITY_OPTIONS } from "@/lib/constants";
+import { POINT_OF_CONTACT_OPTIONS, ACCOUNT_MANAGER_OPTIONS, STAFF_OPTIONS, STATUS_OPTIONS, PRACTICE_FACILITY_OPTIONS, US_STATES } from "@/lib/constants";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -377,69 +377,121 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t">
         {/* Practice/Facility Name */}
-      <FormField
-        control={form.control}
-        name="practiceFacilityName"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Practice/Facility Name</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select practice/facility" />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                {PRACTICE_FACILITY_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-      {/* Practice/Facility Address */}
-      <FormField
-        control={form.control}
-        name="practiceFacilityAddress"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Practice/Facility Address</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="Enter facility address"
-                disabled={disabled}
-                {...field} 
-              />
-            </FormControl>
-            <FormDescription>Auto-populated based on practice selection</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-
-        {/* Practice Address (original field) */}
         <FormField
           control={form.control}
-          name="practiceAddress"
+          name="practiceFacilityName"
           render={({ field }) => (
-            <FormItem className="md:col-span-2">
-              <FormLabel>Full Practice Address *</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Enter complete practice address"
-                  disabled={disabled}
-                  {...field} 
-                />
-              </FormControl>
+            <FormItem>
+              <FormLabel>Practice/Facility Name</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isSaving}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select practice/facility" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {PRACTICE_FACILITY_OPTIONS.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        {/* Practice/Facility Address - Auto-populated, read-only */}
+        <FormField
+          control={form.control}
+          name="practiceFacilityAddress"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Practice/Facility Address</FormLabel>
+              <FormControl>
+                <Input 
+                  placeholder="Auto-populated based on facility"
+                  disabled={true}
+                  {...field} 
+                />
+              </FormControl>
+              <FormDescription>Auto-populated based on practice selection</FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </div>
+
+      {/* Full Practice Address Section */}
+      <div className="space-y-4 pt-6 border-t">
+        <h3 className="text-lg font-semibold">Full Practice Address</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Address Line 1 */}
+          <FormField
+            control={form.control}
+            name="practiceAddress"
+            render={({ field }) => (
+              <FormItem className="md:col-span-2">
+                <FormLabel>Address Line 1 *</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Enter street address"
+                    disabled={disabled || isSaving}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* State */}
+          <FormField
+            control={form.control}
+            name="practiceState"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>State *</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isSaving}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select state" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {US_STATES.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* Zip Code */}
+          <FormField
+            control={form.control}
+            name="practiceZipCode"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Zip Code *</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Enter 5-digit zip code"
+                    maxLength={5}
+                    disabled={disabled || isSaving}
+                    {...field} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
       </div>
 
       {/* Save Section Button */}

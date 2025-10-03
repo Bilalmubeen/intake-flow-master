@@ -14,7 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      admin_dropdown_options: {
+        Row: {
+          created_at: string
+          id: string
+          list_name: string
+          option_label: string
+          option_value: string
+          sort_order: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          list_name: string
+          option_label: string
+          option_value: string
+          sort_order?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          list_name?: string
+          option_label?: string
+          option_value?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      client_intakes: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          organization_name: string | null
+          updated_at: string
+          user_id: string
+          workflow_state: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          id?: string
+          organization_name?: string | null
+          updated_at?: string
+          user_id: string
+          workflow_state?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          organization_name?: string | null
+          updated_at?: string
+          user_id?: string
+          workflow_state?: string
+        }
+        Relationships: []
+      }
+      intake_audit_log: {
+        Row: {
+          action: string
+          changes: Json | null
+          id: string
+          intake_id: string
+          section: string | null
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          changes?: Json | null
+          id?: string
+          intake_id: string
+          section?: string | null
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          changes?: Json | null
+          id?: string
+          intake_id?: string
+          section?: string | null
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "intake_audit_log_intake_id_fkey"
+            columns: ["intake_id"]
+            isOneToOne: false
+            referencedRelation: "client_intakes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

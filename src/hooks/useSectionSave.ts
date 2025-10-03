@@ -5,9 +5,10 @@ import { ClientIntakeFormData } from "@/lib/validations";
 
 export function useSectionSave(
   form: UseFormReturn<ClientIntakeFormData>,
-  onSave: (data: Partial<ClientIntakeFormData>) => Promise<void>
+  onSave: (data: Partial<ClientIntakeFormData>) => Promise<boolean>
 ) {
   const [isSaving, setIsSaving] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(true);
   const { toast } = useToast();
 
   const saveSection = async (sectionFields: (keyof ClientIntakeFormData)[]) => {
@@ -38,12 +39,15 @@ export function useSectionSave(
       });
 
       // Save the section
-      await onSave(sectionData);
+      const success = await onSave(sectionData);
 
-      toast({
-        title: "Section Saved",
-        description: "This section has been saved successfully.",
-      });
+      if (success) {
+        setIsEditMode(false);
+        toast({
+          title: "Section Saved",
+          description: "This section has been saved successfully.",
+        });
+      }
     } catch (error) {
       toast({
         title: "Save Failed",
@@ -55,5 +59,9 @@ export function useSectionSave(
     }
   };
 
-  return { saveSection, isSaving };
+  const enableEdit = () => {
+    setIsEditMode(true);
+  };
+
+  return { saveSection, isSaving, isEditMode, enableEdit };
 }

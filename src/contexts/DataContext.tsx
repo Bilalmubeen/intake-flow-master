@@ -66,6 +66,8 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       contactEmail: data.contactEmail || "",
       contactPhone: data.contactPhone || "",
       practiceAddress: data.practiceAddress || "",
+      practiceState: data.practiceState || "",
+      practiceZipCode: data.practiceZipCode || "",
       pointOfContact: data.pointOfContact || "",
       startDate: data.startDate || null,
       kickoffCallCompleted: data.kickoffCallCompleted || "pending",
