@@ -12,6 +12,7 @@ import { CreateIntake } from "@/pages/CreateIntake";
 import { Records } from "@/pages/Records";
 import { ReviewConsole } from "@/pages/ReviewConsole";
 import { AdminConfig } from "@/pages/AdminConfig";
+import { ViewDraft } from "@/pages/ViewDraft";
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { Header } from "@/components/layout/Header";
 import NotFound from "./pages/NotFound";
@@ -62,6 +63,16 @@ const App = () => (
               <Route path="/intake/new" element={
                 <ProtectedRoute>
                   <CreateIntake />
+                </ProtectedRoute>
+              } />
+              <Route path="/intake/:id" element={
+                <ProtectedRoute>
+                  <CreateIntake />
+                </ProtectedRoute>
+              } />
+              <Route path="/draft/:id" element={
+                <ProtectedRoute>
+                  <ViewDraft />
                 </ProtectedRoute>
               } />
               <Route path="/records" element={

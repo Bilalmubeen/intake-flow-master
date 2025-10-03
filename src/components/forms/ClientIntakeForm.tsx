@@ -20,8 +20,8 @@ import { useSectionSave } from "@/hooks/useSectionSave";
 import { useToast } from "@/hooks/use-toast";
 
 interface ClientIntakeFormProps {
-  initialData?: Partial<ClientIntakeRecord>;
-  onSave: (data: ClientIntakeFormData, status: WorkflowState) => Promise<void>;
+  initialData?: Partial<ClientIntakeFormData>;
+  onSave: (data: Partial<ClientIntakeFormData>, status: WorkflowState) => Promise<void>;
   onCancel?: () => void;
   isEditing?: boolean;
   currentStatus?: WorkflowState;
@@ -57,7 +57,6 @@ export function ClientIntakeForm({
       assignedCredentialingLead: initialData?.assignedCredentialingLead || "",
       assignedITLead: initialData?.assignedITLead || "",
       practiceFacilityName: initialData?.practiceFacilityName || "",
-      practiceFacilityAddress: initialData?.practiceFacilityAddress || "",
       licenseNumbers: initialData?.licenseNumbers || "",
       certificationExpiryDate: initialData?.certificationExpiryDate || undefined,
       complianceDocuments: initialData?.complianceDocuments || [],
@@ -118,7 +117,7 @@ export function ClientIntakeForm({
   const showProgressSection = hasPermission(["reviewer_manager", "administrator"]);
 
   // Section save handler
-  const handleSectionSave = async (sectionData: Partial<ClientIntakeFormData>): Promise<boolean> => {
+  const handleSectionSave = async (sectionData: Partial<ClientIntakeFormData>, status: 'draft' | 'saved'): Promise<boolean> => {
     try {
       await onSave(sectionData, currentStatus);
       return true;
@@ -127,8 +126,6 @@ export function ClientIntakeForm({
       return false;
     }
   };
-
-  const { saveSection: saveSectionBase, isSaving } = useSectionSave(form, handleSectionSave);
 
   // Define section field mappings
   const sectionFields = {
@@ -168,8 +165,45 @@ export function ClientIntakeForm({
     ] as (keyof ClientIntakeFormData)[],
   };
 
+  const createSectionSaveDraftHandler = (sectionKey: keyof typeof sectionFields) => async () => {
+    try {
+      const sectionData: Partial<ClientIntakeFormData> = {};
+      sectionFields[sectionKey].forEach((field) => {
+        (sectionData as any)[field] = form.getValues(field);
+      });
+      return await handleSectionSave(sectionData, 'draft');
+    } catch (error) {
+      return false;
+    }
+  };
+
   const createSectionSaveHandler = (sectionKey: keyof typeof sectionFields) => async () => {
-    await saveSectionBase(sectionFields[sectionKey]);
+    try {
+      const sectionData: Partial<ClientIntakeFormData> = {};
+      
+      // Validate section fields
+      const validationResults = await Promise.all(
+        sectionFields[sectionKey].map((field) => form.trigger(field))
+      );
+
+      const isValid = validationResults.every((result) => result === true);
+
+      if (!isValid) {
+        toast({
+          title: "Validation Error",
+          description: "Please fix the errors in this section before saving.",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      sectionFields[sectionKey].forEach((field) => {
+        (sectionData as any)[field] = form.getValues(field);
+      });
+      return await handleSectionSave(sectionData, 'saved');
+    } catch (error) {
+      return false;
+    }
   };
 
   const handleSave = async (status: WorkflowState) => {
@@ -232,8 +266,8 @@ export function ClientIntakeForm({
               <ClientInfoSection 
                 form={form} 
                 disabled={!canEdit}
+                onSaveDraft={createSectionSaveDraftHandler('clientInfo')}
                 onSaveSection={createSectionSaveHandler('clientInfo')}
-                isSaving={isSaving}
               />
             </CardContent>
           </Card>

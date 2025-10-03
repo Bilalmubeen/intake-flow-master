@@ -62,8 +62,6 @@ export const clientIntakeSchema = z.object({
   
   practiceFacilityName: z.string().default(""),
   
-  practiceFacilityAddress: z.string().default(""),
-  
   // Credentialing & Compliance
   licenseNumbers: z.string()
     .trim()

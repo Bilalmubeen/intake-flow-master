@@ -11,18 +11,45 @@ import { CalendarIcon, Save } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSectionSave } from "@/hooks/useSectionSave";
+import { useState } from "react";
+import { Edit } from "lucide-react";
 
 interface ClientInfoSectionProps {
   form: UseFormReturn<ClientIntakeFormData>;
   disabled?: boolean;
-  onSaveSection?: () => Promise<void>;
-  isSaving?: boolean;
+  onSaveDraft?: () => Promise<boolean>;
+  onSaveSection?: () => Promise<boolean>;
 }
 
-export function ClientInfoSection({ form, disabled = false, onSaveSection, isSaving }: ClientInfoSectionProps) {
+export function ClientInfoSection({ form, disabled = false, onSaveDraft, onSaveSection }: ClientInfoSectionProps) {
   const { user } = useAuth();
   const isIntakeUser = user?.role === "intake_user";
   const kickoffStatus = form.watch("kickoffCallCompleted");
+  const [sectionStatus, setSectionStatus] = useState<'draft' | 'saved'>('draft');
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const isReadOnly = disabled || sectionStatus === 'saved';
+
+  const handleSaveDraft = async () => {
+    if (!onSaveDraft) return;
+    setIsSaving(true);
+    const success = await onSaveDraft();
+    if (success) setSectionStatus('draft');
+    setIsSaving(false);
+  };
+
+  const handleSaveSection = async () => {
+    if (!onSaveSection) return;
+    setIsSaving(true);
+    const success = await onSaveSection();
+    if (success) setSectionStatus('saved');
+    setIsSaving(false);
+  };
+
+  const handleEdit = () => {
+    setSectionStatus('draft');
+  };
   
   return (
     <div className="space-y-6">
@@ -56,13 +83,13 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
         render={({ field }) => (
           <FormItem>
             <FormLabel>Contact Name *</FormLabel>
-            <FormControl>
-              <Input 
-                placeholder="Enter contact name"
-                disabled={disabled}
-                {...field} 
-              />
-            </FormControl>
+                <FormControl>
+                  <Input 
+                    placeholder="Enter contact name"
+                    disabled={isReadOnly}
+                    {...field} 
+                  />
+                </FormControl>
             <FormMessage />
           </FormItem>
         )}
@@ -75,7 +102,7 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
         render={({ field }) => (
           <FormItem>
             <FormLabel>Point of Contact *</FormLabel>
-            <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+            <Select onValueChange={field.onChange} value={field.value} disabled={isReadOnly}>
               <FormControl>
                 <SelectTrigger>
                   <SelectValue placeholder="Select point of contact" />
@@ -383,7 +410,7 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
           render={({ field }) => (
             <FormItem>
               <FormLabel>Practice/Facility Name</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isSaving}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select practice/facility" />
@@ -402,25 +429,6 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
           )}
         />
 
-        {/* Practice/Facility Address - Auto-populated, read-only */}
-        <FormField
-          control={form.control}
-          name="practiceFacilityAddress"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Practice/Facility Address</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Auto-populated based on facility"
-                  disabled={true}
-                  {...field} 
-                />
-              </FormControl>
-              <FormDescription>Auto-populated based on practice selection</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
       </div>
 
       {/* Full Practice Address Section */}
@@ -437,7 +445,7 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
                 <FormControl>
                   <Input 
                     placeholder="Enter street address"
-                    disabled={disabled || isSaving}
+                    disabled={isReadOnly}
                     {...field} 
                   />
                 </FormControl>
@@ -453,7 +461,7 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
             render={({ field }) => (
               <FormItem>
                 <FormLabel>State *</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isSaving}>
+                <Select onValueChange={field.onChange} value={field.value} disabled={isReadOnly}>
                   <FormControl>
                     <SelectTrigger>
                       <SelectValue placeholder="Select state" />
@@ -483,7 +491,7 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
                   <Input 
                     placeholder="Enter 5-digit zip code"
                     maxLength={5}
-                    disabled={disabled || isSaving}
+                    disabled={isReadOnly}
                     {...field} 
                   />
                 </FormControl>
@@ -494,18 +502,42 @@ export function ClientInfoSection({ form, disabled = false, onSaveSection, isSav
         </div>
       </div>
 
-      {/* Save Section Button */}
-      {onSaveSection && !disabled && (
-        <div className="flex justify-end pt-4 border-t">
-          <Button 
-            type="button" 
-            variant="outline" 
-            onClick={onSaveSection}
-            disabled={isSaving}
-          >
-            <Save className="h-4 w-4 mr-2" />
-            {isSaving ? "Saving..." : "Save Section"}
-          </Button>
+      {/* Section Actions */}
+      {(onSaveDraft || onSaveSection) && !disabled && (
+        <div className="flex justify-between pt-4 border-t">
+          {sectionStatus === 'saved' && (
+            <Button 
+              type="button" 
+              variant="outline"
+              onClick={handleEdit}
+            >
+              <Edit className="h-4 w-4 mr-2" />
+              Edit Section
+            </Button>
+          )}
+          <div className="flex gap-2 ml-auto">
+            {sectionStatus === 'draft' && (
+              <>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={handleSaveDraft}
+                  disabled={isSaving}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Saving..." : "Save Draft"}
+                </Button>
+                <Button 
+                  type="button" 
+                  onClick={handleSaveSection}
+                  disabled={isSaving}
+                >
+                  <Save className="h-4 w-4 mr-2" />
+                  {isSaving ? "Saving..." : "Save (Finalize)"}
+                </Button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>

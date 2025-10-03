@@ -3,57 +3,58 @@ import { useData } from "@/contexts/DataContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { ClientIntakeFormData } from "@/lib/validations";
 import { WorkflowState } from "@/types";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { checkDuplicateClientName } from "@/lib/validations";
+import { useIntakePersistence } from "@/hooks/useIntakePersistence";
+import { useState, useEffect } from "react";
 
 export function CreateIntake() {
-  const { createRecord, records } = useData();
+  const { id } = useParams();
+  const { createRecord, records, updateRecord } = useData();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { loadIntake, saveIntake, loading } = useIntakePersistence(id);
+  const [initialData, setInitialData] = useState<Partial<ClientIntakeFormData>>();
 
-  const handleSave = async (data: ClientIntakeFormData, status: WorkflowState) => {
-    // Check for duplicate client name
-    if (checkDuplicateClientName(data.clientName, records)) {
+  useEffect(() => {
+    if (id) {
+      loadExistingIntake();
+    }
+  }, [id]);
+
+  const loadExistingIntake = async () => {
+    if (!id) return;
+    const data = await loadIntake(id);
+    if (data) {
+      setInitialData(data);
+    }
+  };
+
+  const handleSave = async (data: Partial<ClientIntakeFormData>, status: WorkflowState) => {
+    // Save to Supabase using persistence hook
+    const intakeId = await saveIntake(data);
+    
+    if (!intakeId) {
       toast({
-        title: "Duplicate Client Name",
-        description: "A client with this name already exists. Please use a different name.",
+        title: "Error",
+        description: "Failed to save the intake record. Please try again.",
         variant: "destructive"
       });
       return;
     }
 
-    try {
-      const recordId = await createRecord({
-        ...data,
-        status,
-        insurancePlans: data.insurancePlans.map(plan => ({
-          planId: plan.planId,
-          enrollmentEffectiveDate: plan.enrollmentEffectiveDate,
-          notes: plan.notes || ""
-        }))
-      });
-
-      if (status === "submitted") {
-        toast({
-          title: "Intake Submitted",
-          description: "Your client intake has been submitted for review."
-        });
-      } else {
-        toast({
-          title: "Draft Saved",
-          description: "Your client intake has been saved as a draft."
-        });
-      }
-
-      navigate("/records");
-    } catch (error) {
-      console.error("Error creating record:", error);
+    if (status === "submitted") {
       toast({
-        title: "Error",
-        description: "Failed to save the intake record. Please try again.",
-        variant: "destructive"
+        title: "Intake Submitted",
+        description: "Your client intake has been submitted for review."
+      });
+      navigate("/records");
+    } else {
+      toast({
+        title: "Draft Saved",
+        description: "Your client intake has been saved as a draft."
       });
     }
   };
@@ -66,12 +67,18 @@ export function CreateIntake() {
     return <div>Please log in to create an intake record.</div>;
   }
 
+  if (loading && id) {
+    return <div className="container mx-auto py-6">Loading...</div>;
+  }
+
   return (
     <div className="container mx-auto py-6">
       <ClientIntakeForm
+        initialData={initialData}
         onSave={handleSave}
         onCancel={handleCancel}
-        isEditing={false}
+        isEditing={!!id}
+        currentStatus={initialData ? "draft" : "draft"}
       />
     </div>
   );

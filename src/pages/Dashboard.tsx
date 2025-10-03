@@ -13,13 +13,44 @@ import {
   Plus,
   BarChart3,
   Users,
-  Calendar
+  Calendar,
+  Eye
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { format } from "date-fns";
 
 export function Dashboard() {
   const { user, hasPermission } = useAuth();
   const { records } = useData();
+  const [drafts, setDrafts] = useState<any[]>([]);
+  const [loadingDrafts, setLoadingDrafts] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      loadDrafts();
+    }
+  }, [user]);
+
+  const loadDrafts = async () => {
+    try {
+      setLoadingDrafts(true);
+      const { data, error } = await supabase
+        .from("client_intakes")
+        .select("*")
+        .eq("user_id", user?.id)
+        .eq("workflow_state", "draft")
+        .order("updated_at", { ascending: false });
+
+      if (error) throw error;
+      setDrafts(data || []);
+    } catch (error) {
+      console.error("Error loading drafts:", error);
+    } finally {
+      setLoadingDrafts(false);
+    }
+  };
 
   // Calculate statistics based on user role
   const userRecords = hasPermission(["reviewer_manager", "administrator"]) 
@@ -131,6 +162,53 @@ export function Dashboard() {
           </Card>
         )}
       </div>
+
+      {/* Draft Records Section */}
+      {hasPermission("intake_user") && drafts.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Drafts</CardTitle>
+            <CardDescription>
+              Continue working on your draft records
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {drafts.slice(0, 5).map((draft) => {
+                const draftData = draft.data as any;
+                return (
+                  <div key={draft.id} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div className="flex-1">
+                      <p className="font-medium">{draftData.clientName || 'Untitled Draft'}</p>
+                      <p className="text-sm text-muted-foreground">
+                        Last updated: {format(new Date(draft.updated_at), 'PPP')}
+                      </p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm">
+                        <Link to={`/draft/${draft.id}`}>
+                          <Eye className="h-4 w-4 mr-1" />
+                          View
+                        </Link>
+                      </Button>
+                      <Button asChild size="sm">
+                        <Link to={`/intake/${draft.id}`}>
+                          Edit
+                        </Link>
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+              {drafts.length > 5 && (
+                <p className="text-sm text-muted-foreground text-center pt-2">
+                  And {drafts.length - 5} more draft(s)
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

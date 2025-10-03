@@ -78,7 +78,6 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       assignedCredentialingLead: data.assignedCredentialingLead || "",
       assignedITLead: data.assignedITLead || "",
       practiceFacilityName: data.practiceFacilityName || "",
-      practiceFacilityAddress: data.practiceFacilityAddress || "",
       // Credentialing & Compliance
       licenseNumbers: data.licenseNumbers || "",
       certificationExpiryDate: data.certificationExpiryDate || null,

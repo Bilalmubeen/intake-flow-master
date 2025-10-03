@@ -18,8 +18,8 @@ export interface ClientIntakeRecord {
   contactEmail: string;
   contactPhone: string;
   practiceAddress: string;
-  practiceState: string;
-  practiceZipCode: string;
+  practiceState?: string;
+  practiceZipCode?: string;
   pointOfContact: string;
   startDate: Date | null;
   kickoffCallCompleted: string;
@@ -30,7 +30,6 @@ export interface ClientIntakeRecord {
   assignedCredentialingLead: string; // Required
   assignedITLead: string; // Optional
   practiceFacilityName: string;
-  practiceFacilityAddress: string;
   
   // Credentialing & Compliance
   licenseNumbers: string;

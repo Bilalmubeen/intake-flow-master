@@ -99,10 +99,11 @@ export function useIntakePersistence(intakeId?: string) {
     }
   };
 
-  // Save section with audit log
+  // Save section with audit log and status
   const saveSection = async (
     sectionName: string,
-    sectionData: Partial<ClientIntakeFormData>
+    sectionData: Partial<ClientIntakeFormData>,
+    status: 'draft' | 'saved' = 'draft'
   ): Promise<boolean> => {
     try {
       setLoading(true);
@@ -139,12 +140,15 @@ export function useIntakePersistence(intakeId?: string) {
       if (updateError) throw updateError;
 
       // Create audit log entry
+      const auditData: any = { ...sectionData };
+      auditData._sectionStatus = status;
+      
       await supabase.from("intake_audit_log").insert([{
         intake_id: intakeIdToUse,
         user_id: user.id,
-        action: "section_save",
+        action: status === 'saved' ? 'section_finalized' : 'section_draft',
         section: sectionName,
-        changes: serializeData(sectionData),
+        changes: serializeData(auditData),
       }]);
 
       return true;
