@@ -10,13 +10,17 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { MEETING_CADENCE_OPTIONS } from "@/lib/constants";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SectionActions, useSectionActions } from "./SectionActions";
 
 interface SlaSectionProps {
   form: UseFormReturn<ClientIntakeFormData>;
   disabled?: boolean;
+  onSaveSection?: () => Promise<boolean>;
 }
 
-export function SlaSection({ form, disabled = false }: SlaSectionProps) {
+export function SlaSection({ form, disabled = false, onSaveSection }: SlaSectionProps) {
+  const { isReadOnly } = useSectionActions();
+  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -35,7 +39,7 @@ export function SlaSection({ form, disabled = false }: SlaSectionProps) {
                         "w-full pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground"
                       )}
-                      disabled={disabled}
+                      disabled={disabled || isReadOnly}
                     >
                       {field.value ? (
                         format(field.value, "PPP")
@@ -67,7 +71,7 @@ export function SlaSection({ form, disabled = false }: SlaSectionProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Meeting Cadence *</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select meeting frequency" />
@@ -99,7 +103,7 @@ export function SlaSection({ form, disabled = false }: SlaSectionProps) {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -118,7 +122,7 @@ export function SlaSection({ form, disabled = false }: SlaSectionProps) {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -137,7 +141,7 @@ export function SlaSection({ form, disabled = false }: SlaSectionProps) {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -161,7 +165,7 @@ export function SlaSection({ form, disabled = false }: SlaSectionProps) {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -180,17 +184,19 @@ export function SlaSection({ form, disabled = false }: SlaSectionProps) {
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>Weekly Client Meetings Setup</FormLabel>
                 </div>
-              </FormItem>
-            )}
-          />
+          </FormItem>
+        )}
+      />
         </div>
       </div>
+
+      <SectionActions onSaveSection={onSaveSection} disabled={disabled} />
     </div>
   );
 }

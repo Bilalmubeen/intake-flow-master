@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Upload, X } from "lucide-react";
 import { useState } from "react";
+import { SectionActions, useSectionActions } from "./SectionActions";
 
 interface PoliciesSectionProps {
   form: UseFormReturn<ClientIntakeFormData>;
   disabled?: boolean;
+  onSaveSection?: () => Promise<boolean>;
 }
 
-export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps) {
+export function PoliciesSection({ form, disabled = false, onSaveSection }: PoliciesSectionProps) {
   const [uploadedPolicyFiles, setUploadedPolicyFiles] = useState<string[]>([]);
+  const { isReadOnly } = useSectionActions();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -37,11 +40,11 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
         render={({ field }) => (
           <FormItem className="flex flex-row items-start space-x-3 space-y-0">
             <FormControl>
-              <Checkbox
-                checked={field.value}
-                onCheckedChange={field.onChange}
-                disabled={disabled}
-              />
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                  disabled={disabled || isReadOnly}
+                />
             </FormControl>
             <div className="space-y-1 leading-none">
               <FormLabel className="text-sm font-medium">
@@ -68,7 +71,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -87,7 +90,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -106,7 +109,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -125,7 +128,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -144,7 +147,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -163,7 +166,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -182,7 +185,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -201,7 +204,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -227,7 +230,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                     multiple
                     accept=".pdf,.doc,.docx"
                     onChange={handleFileUpload}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                     className="hidden"
                     id="policy-upload"
                   />
@@ -235,7 +238,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                     type="button"
                     variant="outline"
                     onClick={() => document.getElementById('policy-upload')?.click()}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   >
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Policy Files
@@ -247,7 +250,7 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
                     {uploadedPolicyFiles.map((fileName, index) => (
                       <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
                         <span className="text-sm">{fileName}</span>
-                        {!disabled && (
+                        {!disabled && !isReadOnly && (
                           <Button
                             type="button"
                             variant="ghost"
@@ -270,6 +273,8 @@ export function PoliciesSection({ form, disabled = false }: PoliciesSectionProps
           </FormItem>
         )}
       />
+
+      <SectionActions onSaveSection={onSaveSection} disabled={disabled} />
     </div>
   );
 }

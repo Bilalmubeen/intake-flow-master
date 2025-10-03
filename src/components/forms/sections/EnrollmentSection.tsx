@@ -13,15 +13,18 @@ import { cn } from "@/lib/utils";
 import { INSURANCE_PLANS_OPTIONS, STATUS_OPTIONS } from "@/lib/constants";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
+import { SectionActions, useSectionActions } from "./SectionActions";
 
 interface EnrollmentSectionProps {
   form: UseFormReturn<ClientIntakeFormData>;
   disabled?: boolean;
+  onSaveSection?: () => Promise<boolean>;
 }
 
-export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionProps) {
+export function EnrollmentSection({ form, disabled = false, onSaveSection }: EnrollmentSectionProps) {
   const selectedPlans = form.watch("insurancePlans") || [];
   const [customPlanName, setCustomPlanName] = useState("");
+  const { isReadOnly } = useSectionActions();
 
   const handlePlanChange = (planValue: string, checked: boolean) => {
     const currentPlans = form.getValues("insurancePlans") || [];
@@ -95,7 +98,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
           render={({ field }) => (
             <FormItem>
               <FormLabel>ERA Enrollment Status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -120,7 +123,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
           render={({ field }) => (
             <FormItem>
               <FormLabel>EDI Enrollment Status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -145,7 +148,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
           render={({ field }) => (
             <FormItem>
               <FormLabel>EFT Enrollment Status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -178,7 +181,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -197,7 +200,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -216,7 +219,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -235,7 +238,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -254,7 +257,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -273,7 +276,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -302,7 +305,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                       onCheckedChange={(checked) => 
                         handlePlanChange(option.value, checked as boolean)
                       }
-                      disabled={disabled}
+                      disabled={disabled || isReadOnly}
                     />
                     <label
                       htmlFor={option.value}
@@ -331,14 +334,14 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
               placeholder="Enter insurance plan name..."
               value={customPlanName}
               onChange={(e) => setCustomPlanName(e.target.value)}
-              disabled={disabled}
+              disabled={disabled || isReadOnly}
               className="flex-1"
             />
             <Button
               type="button"
               variant="outline"
               onClick={handleAddCustomPlan}
-              disabled={disabled || !customPlanName.trim()}
+              disabled={disabled || isReadOnly || !customPlanName.trim()}
             >
               <Plus className="h-4 w-4 mr-2" />
               Add
@@ -361,7 +364,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                       variant="ghost"
                       size="sm"
                       onClick={() => handleRemoveCustomPlan(plan.planId)}
-                      disabled={disabled}
+                      disabled={disabled || isReadOnly}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -389,7 +392,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                       variant="ghost"
                       size="sm"
                       onClick={() => handleRemoveCustomPlan(plan.planId)}
-                      disabled={disabled}
+                      disabled={disabled || isReadOnly}
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -407,7 +410,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                             "w-full pl-3 text-left font-normal",
                             !plan.enrollmentEffectiveDate && "text-muted-foreground"
                           )}
-                          disabled={disabled}
+                          disabled={disabled || isReadOnly}
                         >
                           {plan.enrollmentEffectiveDate ? (
                             format(plan.enrollmentEffectiveDate, "PPP")
@@ -434,7 +437,7 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
                     <Textarea 
                       placeholder="Enter notes for this plan..."
                       className="min-h-[80px]"
-                      disabled={disabled}
+                      disabled={disabled || isReadOnly}
                       value={isCustomPlan ? (plan.notes?.split('|')[1] === 'custom_plan' ? '' : plan.notes) : (plan.notes || "")}
                       onChange={(e) => {
                         const newValue = isCustomPlan && plan.notes?.includes('|') ? 
@@ -450,6 +453,8 @@ export function EnrollmentSection({ form, disabled = false }: EnrollmentSectionP
           })}
         </div>
       )}
+
+      <SectionActions onSaveSection={onSaveSection} disabled={disabled} />
     </div>
   );
 }

@@ -12,14 +12,17 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { STATUS_OPTIONS } from "@/lib/constants";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useState } from "react";
+import { SectionActions, useSectionActions } from "./SectionActions";
 
 interface CredentialingSectionProps {
   form: UseFormReturn<ClientIntakeFormData>;
   disabled?: boolean;
+  onSaveSection?: () => Promise<boolean>;
 }
 
-export function CredentialingSection({ form, disabled = false }: CredentialingSectionProps) {
+export function CredentialingSection({ form, disabled = false, onSaveSection }: CredentialingSectionProps) {
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const { isReadOnly } = useSectionActions();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -48,8 +51,8 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
               <FormControl>
                 <Input 
                   placeholder="Enter license numbers"
-                  disabled={disabled}
-                  {...field} 
+                  disabled={disabled || isReadOnly}
+                  {...field}
                 />
               </FormControl>
               <FormDescription>Comma-separated if multiple</FormDescription>
@@ -70,7 +73,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <FormControl>
                     <Button
                       variant="outline"
-                      disabled={disabled}
+                      disabled={disabled || isReadOnly}
                       className={cn(
                         "w-full pl-3 text-left font-normal",
                         !field.value && "text-muted-foreground"
@@ -86,7 +89,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                     mode="single"
                     selected={field.value || undefined}
                     onSelect={field.onChange}
-                    disabled={(date) => date < new Date() || disabled}
+                    disabled={(date) => date < new Date() || disabled || isReadOnly}
                     initialFocus
                     className="pointer-events-auto"
                   />
@@ -104,7 +107,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
           render={({ field }) => (
             <FormItem>
               <FormLabel>Medicare Enrollment Status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -130,7 +133,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
           render={({ field }) => (
             <FormItem>
               <FormLabel>Medicaid Enrollment Status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -156,7 +159,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
           render={({ field }) => (
             <FormItem>
               <FormLabel>Commercial Payer Enrollment Status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -182,7 +185,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
           render={({ field }) => (
             <FormItem>
               <FormLabel>CAQH Profile Status</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select status" />
@@ -215,7 +218,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -235,7 +238,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -255,7 +258,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -275,7 +278,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -295,7 +298,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -315,7 +318,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -335,7 +338,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -355,7 +358,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -381,7 +384,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                     multiple
                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                     onChange={handleFileUpload}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                     className="hidden"
                     id="compliance-upload"
                   />
@@ -389,7 +392,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                     type="button"
                     variant="outline"
                     onClick={() => document.getElementById('compliance-upload')?.click()}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   >
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Documents
@@ -401,7 +404,7 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
                     {uploadedFiles.map((fileName, index) => (
                       <div key={index} className="flex items-center justify-between p-2 bg-muted rounded">
                         <span className="text-sm">{fileName}</span>
-                        {!disabled && (
+                        {!disabled && !isReadOnly && (
                           <Button
                             type="button"
                             variant="ghost"
@@ -424,6 +427,8 @@ export function CredentialingSection({ form, disabled = false }: CredentialingSe
           </FormItem>
         )}
       />
+      
+      <SectionActions onSaveSection={onSaveSection} disabled={disabled} />
     </div>
   );
 }

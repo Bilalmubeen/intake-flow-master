@@ -18,11 +18,10 @@ import { Edit } from "lucide-react";
 interface ClientInfoSectionProps {
   form: UseFormReturn<ClientIntakeFormData>;
   disabled?: boolean;
-  onSaveDraft?: () => Promise<boolean>;
   onSaveSection?: () => Promise<boolean>;
 }
 
-export function ClientInfoSection({ form, disabled = false, onSaveDraft, onSaveSection }: ClientInfoSectionProps) {
+export function ClientInfoSection({ form, disabled = false, onSaveSection }: ClientInfoSectionProps) {
   const { user } = useAuth();
   const isIntakeUser = user?.role === "intake_user";
   const kickoffStatus = form.watch("kickoffCallCompleted");
@@ -30,14 +29,6 @@ export function ClientInfoSection({ form, disabled = false, onSaveDraft, onSaveS
   const [isSaving, setIsSaving] = useState(false);
   
   const isReadOnly = disabled || sectionStatus === 'saved';
-
-  const handleSaveDraft = async () => {
-    if (!onSaveDraft) return;
-    setIsSaving(true);
-    const success = await onSaveDraft();
-    if (success) setSectionStatus('draft');
-    setIsSaving(false);
-  };
 
   const handleSaveSection = async () => {
     if (!onSaveSection) return;
@@ -503,7 +494,7 @@ export function ClientInfoSection({ form, disabled = false, onSaveDraft, onSaveS
       </div>
 
       {/* Section Actions */}
-      {(onSaveDraft || onSaveSection) && !disabled && (
+      {onSaveSection && !disabled && (
         <div className="flex justify-between pt-4 border-t">
           {sectionStatus === 'saved' && (
             <Button 
@@ -517,25 +508,14 @@ export function ClientInfoSection({ form, disabled = false, onSaveDraft, onSaveS
           )}
           <div className="flex gap-2 ml-auto">
             {sectionStatus === 'draft' && (
-              <>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={handleSaveDraft}
-                  disabled={isSaving}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {isSaving ? "Saving..." : "Save Draft"}
-                </Button>
-                <Button 
-                  type="button" 
-                  onClick={handleSaveSection}
-                  disabled={isSaving}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {isSaving ? "Saving..." : "Save (Finalize)"}
-                </Button>
-              </>
+              <Button 
+                type="button" 
+                onClick={handleSaveSection}
+                disabled={isSaving}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                {isSaving ? "Saving..." : "Save (Finalize)"}
+              </Button>
             )}
           </div>
         </div>

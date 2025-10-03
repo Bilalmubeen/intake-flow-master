@@ -5,13 +5,17 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { PAYER_ENROLLMENT_STATUS_OPTIONS, CLEARINGHOUSE_OPTIONS, BILLING_PATHWAY_OPTIONS } from "@/lib/constants";
 import { Checkbox } from "@/components/ui/checkbox";
+import { SectionActions, useSectionActions } from "./SectionActions";
 
 interface BillingSectionProps {
   form: UseFormReturn<ClientIntakeFormData>;
   disabled?: boolean;
+  onSaveSection?: () => Promise<boolean>;
 }
 
-export function BillingSection({ form, disabled = false }: BillingSectionProps) {
+export function BillingSection({ form, disabled = false, onSaveSection }: BillingSectionProps) {
+  const { isReadOnly } = useSectionActions();
+  
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -22,7 +26,7 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
           render={({ field }) => (
             <FormItem>
               <FormLabel>Payer Enrollment Status *</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select enrollment status" />
@@ -48,7 +52,7 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
           render={({ field }) => (
             <FormItem>
               <FormLabel>Clearinghouse Selection *</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select clearinghouse" />
@@ -77,8 +81,8 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
               <FormControl>
                 <Input 
                   placeholder="1234567890, 0987654321"
-                  disabled={disabled}
-                  {...field} 
+                  disabled={disabled || isReadOnly}
+                  {...field}
                 />
               </FormControl>
               <FormDescription>
@@ -96,7 +100,7 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
           render={({ field }) => (
             <FormItem>
               <FormLabel>Billing Pathway</FormLabel>
-              <Select onValueChange={field.onChange} value={field.value} disabled={disabled}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={disabled || isReadOnly}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Select billing pathway" />
@@ -128,7 +132,7 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
                   min="0"
                   max="100"
                   placeholder="Enter percentage"
-                  disabled={disabled}
+                  disabled={disabled || isReadOnly}
                   value={field.value || ""}
                   onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : null)}
                 />
@@ -155,7 +159,7 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -175,7 +179,7 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -195,7 +199,7 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
                   <Checkbox
                     checked={field.value}
                     onCheckedChange={field.onChange}
-                    disabled={disabled}
+                    disabled={disabled || isReadOnly}
                   />
                 </FormControl>
                 <div className="space-y-1 leading-none">
@@ -206,6 +210,8 @@ export function BillingSection({ form, disabled = false }: BillingSectionProps) 
           />
         </div>
       </div>
+
+      <SectionActions onSaveSection={onSaveSection} disabled={disabled} />
     </div>
   );
 }

@@ -165,18 +165,6 @@ export function ClientIntakeForm({
     ] as (keyof ClientIntakeFormData)[],
   };
 
-  const createSectionSaveDraftHandler = (sectionKey: keyof typeof sectionFields) => async () => {
-    try {
-      const sectionData: Partial<ClientIntakeFormData> = {};
-      sectionFields[sectionKey].forEach((field) => {
-        (sectionData as any)[field] = form.getValues(field);
-      });
-      return await handleSectionSave(sectionData, 'draft');
-    } catch (error) {
-      return false;
-    }
-  };
-
   const createSectionSaveHandler = (sectionKey: keyof typeof sectionFields) => async () => {
     try {
       const sectionData: Partial<ClientIntakeFormData> = {};
@@ -266,7 +254,6 @@ export function ClientIntakeForm({
               <ClientInfoSection 
                 form={form} 
                 disabled={!canEdit}
-                onSaveDraft={createSectionSaveDraftHandler('clientInfo')}
                 onSaveSection={createSectionSaveHandler('clientInfo')}
               />
             </CardContent>
@@ -281,7 +268,11 @@ export function ClientIntakeForm({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <CredentialingSection form={form} disabled={!canEdit} />
+              <CredentialingSection 
+                form={form} 
+                disabled={!canEdit}
+                onSaveSection={createSectionSaveHandler('credentialing')}
+              />
             </CardContent>
           </Card>
 
@@ -294,7 +285,11 @@ export function ClientIntakeForm({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <BillingSection form={form} disabled={!canEdit} />
+              <BillingSection 
+                form={form} 
+                disabled={!canEdit}
+                onSaveSection={createSectionSaveHandler('billing')}
+              />
             </CardContent>
           </Card>
 
@@ -307,7 +302,11 @@ export function ClientIntakeForm({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <EnrollmentSection form={form} disabled={!canEdit} />
+              <EnrollmentSection 
+                form={form} 
+                disabled={!canEdit}
+                onSaveSection={createSectionSaveHandler('enrollment')}
+              />
             </CardContent>
           </Card>
 
@@ -320,7 +319,11 @@ export function ClientIntakeForm({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <PoliciesSection form={form} disabled={!canEdit} />
+              <PoliciesSection 
+                form={form} 
+                disabled={!canEdit}
+                onSaveSection={createSectionSaveHandler('policies')}
+              />
             </CardContent>
           </Card>
 
@@ -333,7 +336,11 @@ export function ClientIntakeForm({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <SlaSection form={form} disabled={!canEdit} />
+              <SlaSection 
+                form={form} 
+                disabled={!canEdit}
+                onSaveSection={createSectionSaveHandler('sla')}
+              />
             </CardContent>
           </Card>
 
